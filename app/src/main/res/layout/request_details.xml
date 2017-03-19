@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:text="Request Details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView25" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@mipmap/ic_launcher"
+        android:id="@+id/imageView4" />
+
+    <TextView
+        android:text="Item Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView27"
+        android:layout_weight="0.08" />
+
+    <TextView
+        android:text="Value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView28"
+        android:layout_weight="0.09" />
+
+    <TextView
+        android:text="Description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView29"
+        android:layout_weight="0.11" />
+
+    <TextView
+        android:text="User Requested"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView30"
+        android:layout_weight="0.11" />
+
+    <Button
+        android:text="Message User"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button11" />
+
+    <Button
+        android:text="Accept Request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button12" />
+</LinearLayout>
