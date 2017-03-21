@@ -56,9 +56,9 @@ public class SelectionBoardActivityFragment extends Fragment implements VolleyCl
         });
 
         Button searchTravel = (Button) getActivity().findViewById(R.id.searchTravel);
-        enterTravel.setOnClickListener(new View.OnClickListener() {
+        searchTravel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), SelectionBoardActivity.class));
+                startActivity(new Intent(getActivity(), DashboardActivity.class));
             }
         });
 

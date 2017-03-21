@@ -1,6 +1,7 @@
 package com.alicanabadan.shopabroad;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -64,14 +65,13 @@ public class RequestItemActivityFragment extends Fragment {
                         .setNegativeButton("Ok",new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
                                 dialog.cancel();
+                                startActivity(new Intent(getActivity(), DashboardActivity.class));
                             }
                         });
                 //create the dialog and show
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
-
-            
         });
     }
 

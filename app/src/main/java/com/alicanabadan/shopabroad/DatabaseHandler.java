@@ -27,8 +27,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_ITEMS = "items";
     private static final String ITEMS_KEY_ID = "id";
     private static final String ITEMS_KEY_NAME = "name";
-    private static final String ITEMS_KEY_FROM = "from";
-    private static final String ITEMS_KEY_TO = "to";
+    private static final String ITEMS_KEY_FROM = "fromPort";
+    private static final String ITEMS_KEY_TO = "toPort";
     private static final String ITEMS_KEY_PRICE = "price";
     private static final String ITEMS_KEY_DESCRIPTION = "desc";
     private static final String ITEMS_KEY_PHOTO = "photo";
@@ -47,8 +47,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         String CREATE_ITEMS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "("
                 + ITEMS_KEY_ID + " INTEGER PRIMARY KEY," + ITEMS_KEY_NAME + " TEXT,"
-                + ITEMS_KEY_FROM + " TEXT" + ITEMS_KEY_TO + " TEXT"+ ITEMS_KEY_PRICE + " DOUBLE"
-                + ITEMS_KEY_DESCRIPTION + " TEXT"+ ITEMS_KEY_PHOTO + " TEXT"+ ")";
+                + ITEMS_KEY_FROM + " TEXT," + ITEMS_KEY_TO + " TEXT,"+ ITEMS_KEY_PRICE + " DOUBLE,"
+                + ITEMS_KEY_DESCRIPTION + " TEXT,"+ ITEMS_KEY_PHOTO + " TEXT"+ ")";
         db.execSQL(CREATE_ITEMS_TABLE);
     }
 
@@ -110,6 +110,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Inserting Row
         db.insert(TABLE_ITEMS, null, values);
         db.close(); // Closing database connection
+    }
+
+    // Getting All Order Items
+    public List<OrderItem> getOrders() {
+        List<OrderItem> orderList = new ArrayList<OrderItem>();
+        // Select All Query
+        String selectQuery = "SELECT * FROM " + TABLE_ITEMS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                // Adding order to list
+                OrderItem ord = new OrderItem();
+                ord.setName(cursor.getString(1));
+                ord.setFromPort(cursor.getString(2));
+                ord.setToPort(cursor.getString(3));
+                ord.setPrice(cursor.getDouble(4));
+                ord.setDescription(cursor.getString(5));
+                orderList.add(ord);
+            } while (cursor.moveToNext());
+        }
+
+        // return order list
+        return orderList;
     }
 
 }
