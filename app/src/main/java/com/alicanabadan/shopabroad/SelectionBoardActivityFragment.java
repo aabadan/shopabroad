@@ -1,5 +1,6 @@
 package com.alicanabadan.shopabroad;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +29,7 @@ public class SelectionBoardActivityFragment extends Fragment implements VolleyCl
     private VolleyClassString volleyClassString;
     private List<City> cities;
     private DatabaseHandler db;
+    private ProgressDialog progress;
 
     public SelectionBoardActivityFragment() {
     }
@@ -71,6 +73,12 @@ public class SelectionBoardActivityFragment extends Fragment implements VolleyCl
             return;
         }
 
+        progress = new ProgressDialog(getContext());
+        progress.setTitle("Loading");
+        progress.setMessage("Wait while loading...");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
+
         if (volleyClassString == null){
             volleyClassString = new VolleyClassString(getActivity(), this);
         }
@@ -80,7 +88,7 @@ public class SelectionBoardActivityFragment extends Fragment implements VolleyCl
 
     @Override
     public void onInfoAvailable(String responseString) {
-        Log.d(TAG, "onInfoAvailable which: " + " : " + responseString);
+        Log.d(TAG, "onInfoAvailable which: " + " : " + responseString.substring(0,500));
         if (responseString != null) {
             ParseJsonInfo parseJsonInfo = new ParseJsonInfo();
             cities = parseJsonInfo.decodeMessage(responseString);
@@ -94,6 +102,8 @@ public class SelectionBoardActivityFragment extends Fragment implements VolleyCl
        for(City c : cities){
            db.addCity(c);
        }
+
+        progress.dismiss();
     }
 
     public List<City> getCities() {

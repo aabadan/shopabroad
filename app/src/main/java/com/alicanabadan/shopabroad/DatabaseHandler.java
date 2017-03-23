@@ -31,7 +31,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String ITEMS_KEY_TO = "toPort";
     private static final String ITEMS_KEY_PRICE = "price";
     private static final String ITEMS_KEY_DESCRIPTION = "desc";
-    private static final String ITEMS_KEY_PHOTO = "photo";
+    private static final String ITEMS_KEY_IMAGE = "image";
+    private static final String ITEMS_IS_GRANTED = "is_granted";
+    private static final String ITEMS_GRANTED_USER = "granted_user";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,14 +43,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CITIES + "("
-                + CITIES_KEY_ID + " INTEGER PRIMARY KEY," + CITIES_KEY_NAME + " TEXT,"
+                + CITIES_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + CITIES_KEY_NAME + " TEXT,"
                 + CITIES_KEY_CODE + " TEXT" + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
 
         String CREATE_ITEMS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "("
-                + ITEMS_KEY_ID + " INTEGER PRIMARY KEY," + ITEMS_KEY_NAME + " TEXT,"
+                + ITEMS_KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + ITEMS_KEY_NAME + " TEXT,"
                 + ITEMS_KEY_FROM + " TEXT," + ITEMS_KEY_TO + " TEXT,"+ ITEMS_KEY_PRICE + " DOUBLE,"
-                + ITEMS_KEY_DESCRIPTION + " TEXT,"+ ITEMS_KEY_PHOTO + " TEXT"+ ")";
+                + ITEMS_KEY_DESCRIPTION + " TEXT,"+ ITEMS_KEY_IMAGE + " BLOB,"+ ITEMS_IS_GRANTED + " TEXT,"
+                + ITEMS_GRANTED_USER + " TEXT" + ")";
         db.execSQL(CREATE_ITEMS_TABLE);
     }
 
@@ -106,17 +109,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(ITEMS_KEY_TO, item.getToPort());
         values.put(ITEMS_KEY_PRICE, item.getPrice());
         values.put(ITEMS_KEY_DESCRIPTION, item.getDescription());
+        values.put(ITEMS_KEY_IMAGE, item.getImage());
+        values.put(ITEMS_IS_GRANTED, "F");
+        values.put(ITEMS_GRANTED_USER, "");
 
         // Inserting Row
         db.insert(TABLE_ITEMS, null, values);
         db.close(); // Closing database connection
     }
 
-    // Getting All Order Items
-    public List<OrderItem> getOrders() {
+    // Getting All Order Items which are not granted
+    public List<OrderItem> getOrders(boolean isGranted) {
         List<OrderItem> orderList = new ArrayList<OrderItem>();
+        String isGrantedStr = "F";
+        if(isGranted){
+            isGrantedStr = "T";
+        }
         // Select All Query
-        String selectQuery = "SELECT * FROM " + TABLE_ITEMS;
+        String selectQuery = "SELECT * FROM " + TABLE_ITEMS + " WHERE " + ITEMS_IS_GRANTED + " = '" + isGrantedStr + "'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -126,17 +136,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 // Adding order to list
                 OrderItem ord = new OrderItem();
+                ord.setId(cursor.getInt(0));
                 ord.setName(cursor.getString(1));
                 ord.setFromPort(cursor.getString(2));
                 ord.setToPort(cursor.getString(3));
                 ord.setPrice(cursor.getDouble(4));
                 ord.setDescription(cursor.getString(5));
+                ord.setImage(cursor.getBlob(6));
+                ord.setIsGranted(cursor.getString(7));
+                ord.setGrantedUser(cursor.getString(8));
                 orderList.add(ord);
             } while (cursor.moveToNext());
         }
 
         // return order list
         return orderList;
+    }
+
+    public void grantItem(int orderId, String userName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String updateQuery = "UPDATE " + TABLE_ITEMS + " SET IS_GRANTED ='T' , GRANTED_USER ='" + userName + "'" +
+                " WHERE " + ITEMS_KEY_ID + "='" + orderId + "'";
+        db.execSQL(updateQuery);
     }
 
 }

@@ -1,15 +1,20 @@
 package com.alicanabadan.shopabroad;
 
 
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -59,38 +64,38 @@ public class OrderListFragment extends Fragment implements OrdersRecycleViewAdap
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
 
-        /*quakeRecyclerViewAdapter.setOnItemClickListener(new QuakeRecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Quake quake) {
-                //onclick show details
-                Location loc = new Location("quakeGPS");
-                loc.setLatitude(Double.parseDouble(quake.getLatitude()));
-                loc.setLongitude(Double.parseDouble(quake.getLongitude()));
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-                alertDialogBuilder.setTitle("Earthquake Details");
-                alertDialogBuilder
-                        .setMessage(loc.toString()+"\t"+"\t"+quake.getLink())
-                        .setCancelable(false)
-                        .setNegativeButton("Ok",new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
-                //create the dialog and show
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-
-            }
-        });*/
-    }
-
-    @Override
-    public void onItemSelected(OrderItem orderItem) {
-
     }
 
     public List<OrderItem> retrieveOrderData(){
         DatabaseHandler db = new DatabaseHandler(getActivity());
-        return db.getOrders();
+        return db.getOrders(false);
     }
+
+    @Override
+    public void onItemSelected(OrdersRecycleViewAdapter.OrderViewHolder holder,OrderItem orderItem) {
+        showDetails(holder ,orderItem);
+    }
+
+    private void showDetails(OrdersRecycleViewAdapter.OrderViewHolder holder,OrderItem orderItem){
+        Intent intent = new Intent(getActivity(), ItemDetails.class);
+        intent.putExtra(OrderItem.ID, orderItem.getId());
+        intent.putExtra(OrderItem.NAME, orderItem.getName());
+        intent.putExtra(OrderItem.FROMPORT, orderItem.getFromPort());
+        intent.putExtra(OrderItem.TOPORT, orderItem.getToPort());
+        intent.putExtra(OrderItem.PRICE, orderItem.getPrice());
+        intent.putExtra(OrderItem.DESCRIPTION, orderItem.getDescription());
+        intent.putExtra(OrderItem.IMAGE, orderItem.getImage());
+        intent.putExtra(OrderItem.IS_GRANTED, orderItem.getIsGranted());
+        intent.putExtra(OrderItem.GRANTED_USER, orderItem.getGrantedUser());
+
+        View imageView = holder.itemImageIcon;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                    imageView, imageView.getTransitionName());
+            getActivity().startActivity(intent, options.toBundle());
+        } else {
+            getActivity().startActivity(intent);
+        }
+    }
+
 }

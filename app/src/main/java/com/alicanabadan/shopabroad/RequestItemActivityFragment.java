@@ -2,6 +2,10 @@ package com.alicanabadan.shopabroad;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -13,7 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -27,6 +37,8 @@ public class RequestItemActivityFragment extends Fragment {
     private EditText itemPrice;
     private EditText itemDescription;
     private Button addItem;
+    private ImageView itemImage;
+    private static int PICK_IMAGE_REQUEST = 1;
 
     public RequestItemActivityFragment() {
     }
@@ -41,6 +53,12 @@ public class RequestItemActivityFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        itemImage = (ImageView) getActivity().findViewById(R.id.itemImage);
+        itemImage.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                loadImagefromGallery(view);
+            }
+        });
         itemName = (EditText) getActivity().findViewById(R.id.item_name);
         fromSelection = (AutoCompleteTextView) getActivity().findViewById(R.id.fromAutoComplete);
         toSelection = (AutoCompleteTextView) getActivity().findViewById(R.id.toAutoComplete);
@@ -56,11 +74,14 @@ public class RequestItemActivityFragment extends Fragment {
 
         addItem.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                if(!allFieldsFilled()){
+                    return;
+                }
                 saveItemRequest();
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
                 alertDialogBuilder.setTitle("Order Request Status");
                 alertDialogBuilder
-                        .setMessage(itemName.getText().toString() + "added successfully")
+                        .setMessage(itemName.getText().toString() + " added successfully")
                         .setCancelable(false)
                         .setNegativeButton("Ok",new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
@@ -76,16 +97,14 @@ public class RequestItemActivityFragment extends Fragment {
     }
 
     public void saveItemRequest(){
-        if(allFieldsFilled()){
             OrderItem orderItem = new OrderItem();
             orderItem.setName(itemName.getText().toString());
             orderItem.setFromPort(fromSelection.getText().toString());
             orderItem.setToPort(toSelection.getText().toString());
             orderItem.setPrice(Double.parseDouble(itemPrice.getText().toString()));
             orderItem.setDescription(itemDescription.getText().toString());
-
+            orderItem.setImage(Utils.getImageBytes(((BitmapDrawable)itemImage.getDrawable()).getBitmap()));
             db.addItem(orderItem);
-        }
     }
 
     public boolean allFieldsFilled(){
@@ -96,5 +115,30 @@ public class RequestItemActivityFragment extends Fragment {
             return false;
         }
         return true;
+    }
+
+    public void loadImagefromGallery(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+
+                ImageView imageView = (ImageView) getActivity().findViewById(R.id.itemImage);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

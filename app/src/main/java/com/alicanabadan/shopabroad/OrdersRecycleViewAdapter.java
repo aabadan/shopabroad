@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class OrdersRecycleViewAdapter extends RecyclerView.Adapter<OrdersRecycle
     private final OnAdapterItemInteraction mListener;
 
     public interface OnAdapterItemInteraction {
-        void onItemSelected(OrderItem orderItem);
+        void onItemSelected(OrderViewHolder holder,OrderItem orderItem);
     }
 
     public OrdersRecycleViewAdapter(List<OrderItem> items, OnAdapterItemInteraction listener) {
@@ -28,34 +29,40 @@ public class OrdersRecycleViewAdapter extends RecyclerView.Adapter<OrdersRecycle
     }
 
     public class OrderViewHolder extends RecyclerView.ViewHolder {
+        public ImageView itemImageIcon;
         public TextView orderDetails;
 
         public OrderViewHolder(View view) {
             super(view);
+            itemImageIcon = (ImageView) view.findViewById(R.id.itemImageIcon);
             orderDetails = (TextView) view.findViewById(R.id.orderDetails);
         }
     }
 
     @Override
     public OrderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_list_row, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row_cardview, parent, false);
         return new OrderViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(OrderViewHolder holder, int position) {
+    public void onBindViewHolder(final OrderViewHolder holder, int position) {
         final OrderItem orderItem = orderList.get(position);
-        holder.orderDetails.setText(orderItem.getName()+"\t"+"\t" + orderItem.getPrice()+"\t"+"\t" + orderItem.getDescription());
+        holder.itemImageIcon.setImageBitmap(Utils.getImage(orderItem.getImage()));
+        holder.orderDetails.setText("Name:"+"\t" + orderItem.getName()+"\n" + "Trip:"+"\t" + orderItem.getFromPort()+"\t"+"\t"+"->" +orderItem.getToPort()+"\n" +
+                "Price:"+"\t" + orderItem.getPrice());
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onItemSelected(orderItem);
+                    mListener.onItemSelected(holder, orderItem);
                 }
             }
         };
+
         holder.orderDetails.setOnClickListener(listener);
+        holder.itemImageIcon.setOnClickListener(listener);
 
     }
 

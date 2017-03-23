@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.alicanabadan.shopabroad.ItemDetailsFragment"
+    tools:showIn="@layout/activity_item_details">
+
+    <LinearLayout
+        android:layout_width="368dp"
+        android:layout_height="551dp"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <TextView
+            android:text="Request Details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView25" />
+
+        <ImageView
+            android:id="@+id/itemImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:layout_weight="0.32" />
+
+            <TextView
+                android:id="@+id/item_name"
+                android:layout_width="183dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="From"
+                android:layout_weight="0.32" />
+
+            <TextView
+                android:id="@+id/from_port"
+                android:layout_width="183dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="To"
+                android:layout_weight="0.32" />
+
+            <TextView
+                android:id="@+id/to_port"
+                android:layout_width="183dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:text="Price"
+                android:layout_width="113dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.01" />
+
+            <TextView
+                android:id="@+id/item_price"
+                android:layout_width="183dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="$"
+                android:layout_width="113dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.01" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1">
+
+            <TextView
+                android:text="Description"
+                android:layout_width="115dp"
+                android:layout_height="30dp"
+                android:layout_weight="0.39" />
+
+            <TextView
+                android:id="@+id/item_description"
+                android:layout_width="183dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+            android:text="User Requested"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView30"
+            android:layout_weight="0.11" />
+
+        <Button
+            android:text="Message User"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnMessageUser" />
+
+        <Button
+            android:text="Accept Request"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnAcceptRequest" />
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>
