@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.amazonaws.mobile.AWSMobileClient;
@@ -19,33 +20,44 @@ import com.amazonaws.mobilehelper.auth.StartupAuthResultHandler;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = "SplashActivity";
+    private static final String LOG_TAG = SplashActivity.class.getSimpleName();
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 3000;
 
-    @Override
+    private final StartupAuthResultHandler authResultHandler = new StartupAuthResultHandler() {
+        @Override
+        public void onComplete(final StartupAuthResult authResult) {
+            final IdentityManager identityManager = authResult.getIdentityManager();
+
+            if (authResult.isUserSignedIn()) {
+                final IdentityProvider provider = identityManager.getCurrentIdentityProvider();
+                // If we were signed in previously with a provider indicate that to the user with a toast.
+                Toast.makeText(SplashActivity.this, String.format("Signed in with %s",
+                        provider.getDisplayName()), Toast.LENGTH_LONG).show();
+            } else {
+                // Either the user has never signed in with a provider before or refresh failed with a previously
+                // signed in provider.
+
+                // Optionally, you may want to check if refresh failed for the previously signed in provider.
+                final StartupAuthErrorDetails errors = authResult.getErrorDetails();
+                if (errors.didErrorOccurRefreshingProvider()) {
+                    Log.w(LOG_TAG, String.format(
+                            "Credentials for Previously signed-in provider %s could not be refreshed.",
+                            errors.getErrorProvider().getDisplayName()), errors.getProviderErrorException());
+                }
+
+                doMandatorySignIn(identityManager);
+                return;
+            }
+
+            goMain(SplashActivity.this);
+        }
+    };
+
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
-        /*new Handler().postDelayed(new Runnable() {
-
-            /*
-             * Showing splash screen with a timer. This will be useful when you
-             * want to show case your app logo / company
-             */
-/*
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(SplashActivity.this, LoginActivity.class);
-                startActivity(i);
-
-                // close this activity
-                finish();
-            }
-        }, SPLASH_TIME_OUT);*/
 
         AWSMobileClient.initializeMobileClientIfNecessary(getApplicationContext());
         final IdentityManager identityManager =
@@ -97,21 +109,24 @@ public class SplashActivity extends AppCompatActivity {
                 // ... add error handling logic here ...
             }
         });
+    }*/
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreate");
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
+
+        AWSMobileClient.initializeMobileClientIfNecessary(getApplicationContext());
+        final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();
+
+        identityManager.doStartupAuth(this, authResultHandler, SPLASH_TIME_OUT);
+
     }
 
     private void doMandatorySignIn(final IdentityManager identityManager) {
-        identityManager.signInOrSignUp(SplashActivity.this, new DefaultSignInResultHandler() {
-            @Override
-            public void onSuccess(Activity callingActivity, IdentityProvider provider) {
-
-            }
-
-            @Override
-            public boolean onCancel(Activity callingActivity) {
-                return false;
-            }
-            // ... implement interface methods ...
-        });
+        identityManager.signInOrSignUp(SplashActivity.this, new SignInHandler());
         SplashActivity.this.finish();
     }
 
@@ -120,5 +135,14 @@ public class SplashActivity extends AppCompatActivity {
         callingActivity.startActivity(new Intent(callingActivity, SelectionBoardActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         callingActivity.finish();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Touch event bypasses waiting for the splash timeout to expire.
+        AWSMobileClient.defaultMobileClient()
+                .getIdentityManager()
+                .expireSignInTimeout();
+        return true;
     }
 }
