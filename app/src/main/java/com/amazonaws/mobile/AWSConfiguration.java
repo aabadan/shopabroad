@@ -25,6 +25,8 @@ public class AWSConfiguration {
       Regions.fromName("us-east-1");
     public static final String  AMAZON_COGNITO_IDENTITY_POOL_ID =
         "us-east-1:8820165b-31e1-4d03-a710-bbdafddf1c13";
+    public static final Regions AMAZON_DYNAMODB_REGION =
+       Regions.fromName("us-east-1");
     public static final String AMAZON_COGNITO_USER_POOL_ID =
         "us-east-1_jx9pNXk7f";
     public static final String AMAZON_COGNITO_USER_POOL_CLIENT_ID =

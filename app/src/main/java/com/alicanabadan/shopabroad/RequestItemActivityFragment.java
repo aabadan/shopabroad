@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -14,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.mobile.AWSMobileClient;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.models.nosql.ItemsDO;
+
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
@@ -33,6 +37,8 @@ import static android.app.Activity.RESULT_OK;
  * A placeholder fragment containing a simple view.
  */
 public class RequestItemActivityFragment extends Fragment {
+
+    private static final String LOG_TAG = RequestItemActivityFragment.class.getSimpleName();
 
     private DatabaseHandler db;
     private EditText itemName;
@@ -102,7 +108,7 @@ public class RequestItemActivityFragment extends Fragment {
         });
     }
 
-    public void saveItemRequest(){
+    /*public void saveItemRequest(){
             OrderItem orderItem = new OrderItem();
             orderItem.setName(itemName.getText().toString());
             orderItem.setFromPort(fromSelection.getText().toString());
@@ -111,7 +117,7 @@ public class RequestItemActivityFragment extends Fragment {
             orderItem.setDescription(itemDescription.getText().toString());
             orderItem.setImage(Utils.getImageBytes(((BitmapDrawable)itemImage.getDrawable()).getBitmap()));
             db.addItem(orderItem);
-    }
+    }*/
 
     public boolean allFieldsFilled(){
         if(itemName.getText().toString().trim().equals("") || fromSelection.getText().toString().trim().equals("") ||
@@ -185,4 +191,30 @@ public class RequestItemActivityFragment extends Fragment {
         }
     }
 
+    public void saveItemRequest() {
+        // Fetch the default configured DynamoDB ObjectMapper
+        final DynamoDBMapper dynamoDBMapper = AWSMobileClient.defaultMobileClient().getDynamoDBMapper();
+        final ItemsDO itemsDO = new ItemsDO(); // Initialize the Notes Object
+
+        itemsDO.setId(1.0);
+        itemsDO.setUserCreated("alican");
+        itemsDO.setCreateDate("");
+        itemsDO.setName(itemName.getText().toString());
+        itemsDO.setFromPort(fromSelection.getText().toString());
+        itemsDO.setToPort(toSelection.getText().toString());
+        itemsDO.setPrice(Double.parseDouble(itemPrice.getText().toString()));
+        itemsDO.setDescription(itemDescription.getText().toString());
+        itemsDO.setUserCreated("");
+        itemsDO.setGrantDate("");
+        itemsDO.setIsGranted(false);
+        //itemsDO.setImage(Utils.getImageBytes(((BitmapDrawable)itemImage.getDrawable()).getBitmap()));
+        AmazonClientException lastException = null;
+
+        try {
+            dynamoDBMapper.save(itemsDO);
+        } catch (final AmazonClientException ex) {
+            Log.e(LOG_TAG, "Failed saving item : " + ex.getMessage(), ex);
+            lastException = ex;
+        }
+    }
 }

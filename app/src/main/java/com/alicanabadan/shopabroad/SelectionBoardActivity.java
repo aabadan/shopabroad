@@ -14,12 +14,23 @@ import com.amazonaws.mobile.AWSMobileClient;
 import com.amazonaws.mobilehelper.auth.IdentityManager;
 import com.amazonaws.mobilehelper.auth.IdentityProvider;
 
+import java.util.ArrayList;
+
 public class SelectionBoardActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selection_board);
+//
+        //FillCitiesTask fillCitiesTask = new FillCitiesTask(getApplicationContext());
+        //fillCitiesTask.execute();
+//
+        RetrieveCitiesTask retrieveCitiesTask = new RetrieveCitiesTask(getApplicationContext());
+        retrieveCitiesTask.execute();
+
+        ArrayList<String> cityNames = retrieveCitiesTask.names;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 

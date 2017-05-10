@@ -2,7 +2,6 @@ package com.alicanabadan.shopabroad;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +9,6 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.amazonaws.mobile.AWSMobileClient;
-import com.amazonaws.mobilehelper.auth.DefaultSignInResultHandler;
-import com.amazonaws.mobilehelper.auth.IdentityHandler;
 import com.amazonaws.mobilehelper.auth.IdentityManager;
 import com.amazonaws.mobilehelper.auth.IdentityProvider;
 import com.amazonaws.mobilehelper.auth.StartupAuthErrorDetails;
@@ -114,7 +111,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreate");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 

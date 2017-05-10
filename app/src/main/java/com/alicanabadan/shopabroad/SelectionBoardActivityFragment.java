@@ -88,20 +88,20 @@ public class SelectionBoardActivityFragment extends Fragment implements VolleyCl
 
     @Override
     public void onInfoAvailable(String responseString) {
-        Log.d(TAG, "onInfoAvailable which: " + " : " + responseString.substring(0,500));
+        //Log.d(TAG, "onInfoAvailable which: " + " : " + responseString.substring(0,500));
         if (responseString != null) {
             ParseJsonInfo parseJsonInfo = new ParseJsonInfo();
             cities = parseJsonInfo.decodeMessage(responseString);
-        }
 
-        /**
-         * CRUD Operations
-         * */
-        // Inserting Contacts
-        Log.d("Insert: ", "Inserting ..");
-       for(City c : cities){
-           db.addCity(c);
-       }
+            /**
+             * CRUD Operations
+             * */
+            // Inserting Contacts
+            Log.d("Insert: ", "Inserting ..");
+            for(City c : cities){
+                db.addCity(c);
+            }
+        }
 
         progress.dismiss();
     }

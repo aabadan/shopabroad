@@ -13,7 +13,10 @@ import android.util.Log;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.mobilehelper.auth.IdentityManager;
+import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobile.user.signin.FacebookSignInProvider;
 import com.amazonaws.mobilehelper.auth.signin.CognitoUserPoolsSignInProvider;
 
@@ -30,6 +33,8 @@ public class AWSMobileClient {
 
     private ClientConfiguration clientConfiguration;
     private IdentityManager identityManager;
+    private AmazonDynamoDBClient dynamoDBClient;
+    private DynamoDBMapper dynamoDBMapper;
 
     /**
      * Build class used to create the AWS mobile client.
@@ -113,6 +118,9 @@ public class AWSMobileClient {
         this.identityManager = identityManager;
         this.clientConfiguration = clientConfiguration;
 
+        this.dynamoDBClient = new AmazonDynamoDBClient(identityManager.getCredentialsProvider(), clientConfiguration);
+        this.dynamoDBClient.setRegion(Region.getRegion(AWSConfiguration.AMAZON_DYNAMODB_REGION));
+        this.dynamoDBMapper = new DynamoDBMapper(dynamoDBClient);
     }
 
     /**
@@ -175,6 +183,23 @@ public class AWSMobileClient {
             AWSMobileClient.setDefaultMobileClient(awsClient);
         }
         Log.d(LOG_TAG, "AWS Mobile Client is OK");
+    }
+
+    /**
+     * Gets the DynamoDB Client, which allows accessing Amazon DynamoDB tables.
+     * @return the DynamoDB client instance.
+     */
+    public AmazonDynamoDBClient getDynamoDBClient() {
+        return dynamoDBClient;
+    }
+
+    /**
+     * Gets the Dynamo DB Object Mapper, which allows accessing DynamoDB tables using annotated
+     * data object classes to represent your data using POJOs (Plain Old Java Objects).
+     * @return the DynamoDB Object Mapper instance.
+     */
+    public DynamoDBMapper getDynamoDBMapper() {
+        return dynamoDBMapper;
     }
 
 }
